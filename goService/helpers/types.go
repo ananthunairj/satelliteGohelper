@@ -39,6 +39,7 @@ type RocketPositionParameter[T float64] struct {
 	DragX     T
 	DragY     T
 	Mass      T
+	Angle     T
 }
 
 type RocketPositionResult struct {
@@ -48,11 +49,11 @@ type RocketPositionResult struct {
 	AccelerationY float64
 	PositionX     float64
 	PositionY     float64
+	Angle         float64
 }
 
 type StimulationResult struct {
-	Data RocketPositionResult
+	Data  RocketPositionResult
 	Count int
-	Flag bool
-	
+	Flag  bool
 }
