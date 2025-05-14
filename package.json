@@ -1,0 +1,21 @@
+{
+  "name": "satellitelauncher",
+  "version": "1.0.0",
+  "description": "Interface for satellite launch data",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anandhu",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^35.2.1"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "gitignore": "^0.7.0",
+    "node-fetch": "^3.3.2"
+  }
+}
