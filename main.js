@@ -9,9 +9,11 @@ dotenv.config();
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    fullscreen: true,
+   width: 800,
+   height: 600,
+  frame: true,
+  show: false,
+   
 
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -19,7 +21,8 @@ const createWindow = () => {
       contextIsolation: true,
     },
   });
-
+  win.maximize();
+  win.show();
   win.loadFile("index.html");
 };
 

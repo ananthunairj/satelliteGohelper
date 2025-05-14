@@ -42,20 +42,32 @@ func RemainingMassCalculator(massSlice []float64, index int, fuelburnrate float6
 func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 
 	rocketData := constants.GetAllRocketData()
-	var firstStageMass float64 = rocketData[0][2] + rocketData[0][3] + rocketData[1][2] + rocketData[1][3] + rocketData[2][2] + rocketData[2][3]
-	var secondStageMass float64 =  rocketData[1][2] + rocketData[1][3] + rocketData[2][2] + rocketData[2][3]
-	var thirdStageMass float64 = rocketData[2][2] + rocketData[2][3]
-	var mass [3]float64 = [3]float64{firstStageMass,secondStageMass,thirdStageMass}
-	var massptr *[3]float64 = &mass
+	var (
+		firstStageMass  float64 = rocketData[0][2] + rocketData[0][3] + rocketData[1][2] + rocketData[1][3] + rocketData[2][2] + rocketData[2][3]
+		secondStageMass float64 = rocketData[1][2] + rocketData[1][3] + rocketData[2][2] + rocketData[2][3]
+		thirdStageMass  float64 = rocketData[2][2] + rocketData[2][3]
+		mass               [3]float64  = [3]float64{firstStageMass, secondStageMass, thirdStageMass}
+		massptr            *[3]float64 = &mass
+		timeCounter        uint        = 1
+		timeCounterPointer *uint       = &timeCounter
+		positionX          float64     = 0
+		positionXPointer   *float64    = &positionX
+		positionY          float64     = 0
+		positionYPointer   *float64    = &positionY
+		velocityX          float64     = 0
+		velocityXPointer   *float64    = &velocityX
+		velocityY          float64     = 0
+		velocityYPointer   *float64    = &velocityY
+	)
 
 	for i := 0; i < len(rocketData); i++ {
-		x := 0
-		y := 0
-		vx := 0
-		vy := 0
+		x := *positionXPointer
+		y := *positionYPointer
+		vx := *velocityXPointer
+		vy := *velocityYPointer
 
 		var burnTime uint = 0
-		var count int = 0;
+		var count int = 0
 		var timePointer *uint = &burnTime
 		fuelBurned, err := FuelBurnRate(rocketData[i][1], rocketData[i][0])
 		if err != nil {
@@ -72,10 +84,13 @@ func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 			if err != nil {
 				fmt.Println("Error occured in DragForceCalculator")
 			}
-			thrustResult, err := ThrustCalculator(rocketData[i][0], *timePointer)
+			thrustResult, err := ThrustCalculator(rocketData[i][0], *timeCounterPointer)
 			if err != nil {
 				fmt.Println("Error occured in ThrustCalculator")
 			}
+			time := *timeCounterPointer
+			angle := helpers.InterPolatePitch(float64(time))
+
 			err = RemainingMassCalculator(massSlice, i, fuelBurned)
 			if err != nil {
 				fmt.Println("Error occured in RemainingMassCalculator")
@@ -91,17 +106,21 @@ func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 				DragX:     dragResult.DragX,
 				DragY:     dragResult.DragY,
 				Mass:      massSlice[i],
+				Angle:     angle,
 			}
 			rocketParamresult, err := internal.RocketPositionCalculator(rocketPositionValues)
 			if err != nil {
 				fmt.Printf("Error in RocketPositionCalculator")
 			}
-			rocketChannel <- helpers.StimulationResult{Data: rocketParamresult, Count: count,Flag: true}
-			*timePointer += 1
+            *timePointer += 1
+			*timeCounterPointer += 1
+			
+
+			rocketChannel <- helpers.StimulationResult{Data: rocketParamresult, Count: count, Flag: true}
+			
 
 		}
 	}
 	rocketChannel <- helpers.StimulationResult{Data: helpers.RocketPositionResult{}, Flag: false}
-
 
 }
