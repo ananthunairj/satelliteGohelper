@@ -2,9 +2,7 @@ package main
 
 import (
 	// "fmt"
-
-	// "fmt"
-	"fmt"
+	
 	"io"
 
 	// "github.com/Anandhu3301/satelliteGohelper/constants"
@@ -37,20 +35,20 @@ func handleEndpoint1(c *gin.Context) {
 }
 
 func main() {
-	// router := gin.Default()
+	router := gin.Default()
 
-	// router.GET("/orbitalStream", handleEndpoint1)
+	router.GET("/orbitalStream", handleEndpoint1)
 
 
-	// router.Run(":8080")
+	router.Run(":8080")
    
-	chanStream := make(chan helpers.StimulationResult, 1000)
-	go func() {
-		defer close(chanStream)
-		satellitecalculations.StimulationCalculation(chanStream)
-	}()
+	// chanStream := make(chan helpers.StimulationResult, 1000)
+	// go func() {
+	// 	defer close(chanStream)
+	// 	satellitecalculations.StimulationCalculation(chanStream)
+	// }()
     
-	for data := range chanStream {
-		fmt.Printf("%+v\n",data)
-	}
+	// for data := range chanStream {
+	// 	fmt.Printf("%+v\n",data)
+	// }
 }
