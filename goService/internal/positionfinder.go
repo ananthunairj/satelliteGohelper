@@ -10,15 +10,16 @@ import (
 func RocketPositionCalculator(rocketdata helpers.RocketPositionParameter[float64]) (helpers.RocketPositionResult, error) {
 	var ax float64 = (rocketdata.ThrustX - rocketdata.DragX) / rocketdata.Mass
 	var ay float64 = (rocketdata.ThrustY - rocketdata.DragY - (constants.G0 * rocketdata.Mass)) / rocketdata.Mass
-	var axConverted float64 = math.Abs(ax)
-	var ayConverted float64 = math.Abs(ay)
-	//  var roundaX float64 = helpers.RoundFloatNumbers(ax,2);
-	//  var roundaY float64 = helpers.RoundFloatNumbers(ay,2)
+	timestep := 0.1
+	
 
-	var velocityX float64 = rocketdata.VelocityX + axConverted*0.1
-	var velocityY float64 = rocketdata.VelocityY + ayConverted*0.1
-	var positionX float64 = rocketdata.PositionX + velocityX
-	var positionY float64 = rocketdata.PositionY + velocityY
+	var velocityX float64 = rocketdata.VelocityX + ax*timestep
+	var velocityY float64 = rocketdata.VelocityY + ay*timestep
+	var positionX float64 = rocketdata.PositionX + velocityX*timestep
+	var positionY float64 = rocketdata.PositionY + velocityY*timestep
+
+	var velocity float64 = math.Sqrt(velocityX*velocityX + velocityY*velocityY)
+	var acceleration float64 = math.Sqrt(ax*ax+ ay*ay)
 
 	return helpers.RocketPositionResult{AccelerationX: ax,
 		AccelerationY: ay,
@@ -26,5 +27,7 @@ func RocketPositionCalculator(rocketdata helpers.RocketPositionParameter[float64
 		VelocityY:     velocityY,
 		PositionX:     positionX,
 		PositionY:     positionY,
-		Angle:         rocketdata.Angle}, nil
+		Velocity:      velocity,
+		Acceleration:  acceleration,
+	}, nil
 }

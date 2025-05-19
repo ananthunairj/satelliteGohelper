@@ -30,7 +30,7 @@ const (
 
 var rocketData RocketComponentMap = RocketComponentMap{
 	StageOne: {
-		Thrust:   5150e3,
+		Thrust:   5150e3 * 2,
 		Isp:      274,
 		DryMass:  62e3 * 2,
 		Fuel:     205e3 * 2,
@@ -38,7 +38,7 @@ var rocketData RocketComponentMap = RocketComponentMap{
 		Diameter: 5,
 	},
 	StageTwo: {
-		Thrust:   158e3,
+		Thrust:   1588e3 ,
 		Isp:      281,
 		DryMass:  9e3,
 		Fuel:     116e3,

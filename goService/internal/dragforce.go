@@ -21,7 +21,6 @@ func DragForceCalculator(dragStruct helpers.DragForceStruct[float64]) (helpers.D
 	var dragForce float64
 	var dragX float64
 	var dragY float64
-	var velocity float64
 	if vx == 0 && vy == 0 {
 		return helpers.DragResult[float64]{
 			DragForce: 0,
@@ -30,9 +29,9 @@ func DragForceCalculator(dragStruct helpers.DragForceStruct[float64]) (helpers.D
 		}, nil
 	}
 	if vx == 0 {
-		velocity = math.Sqrt(math.Pow(vy, 2))
-		dragForce = 0.5 * rhoY * constants.Cd * area * math.Pow(velocity, 2)
-		dragY = dragForce * (vy / velocity)
+
+		dragForce = 0.5 * rhoY * constants.Cd * area * math.Pow(dragStruct.Velocity, 2)
+		dragY = dragForce * (vy / dragStruct.Velocity)
 		return helpers.DragResult[float64]{
 			DragForce: dragForce,
 			DragX:     0,
@@ -40,22 +39,22 @@ func DragForceCalculator(dragStruct helpers.DragForceStruct[float64]) (helpers.D
 		}, nil
 	}
 	if vy == 0 {
-		velocity = math.Sqrt(math.Pow(vx, 2))
-		dragForce = 0.5 * rhoY * constants.Cd * area * math.Pow(velocity, 2)
-		dragX = dragForce * (vx / velocity)
+
+		dragForce = 0.5 * rhoY * constants.Cd * area * math.Pow(dragStruct.Velocity, 2)
+		dragX = dragForce * (vx / dragStruct.Velocity)
 		return helpers.DragResult[float64]{
 			DragForce: dragForce,
 			DragX:     dragX,
 			DragY:     0,
 		}, nil
 	}
-	velocity = math.Sqrt(math.Pow(vx, 2) + math.Pow(vy, 2))
-	dragForce = 0.5 * rhoY * constants.Cd * area * math.Pow(velocity, 2)
-	dragX = dragForce * (vx / velocity)
-	dragY = dragForce * (vy / velocity)
+
+	dragForce = 0.5 * rhoY * constants.Cd * area * math.Pow(dragStruct.Velocity, 2)
+	dragX = dragForce * (vx / dragStruct.Velocity)
+	dragY = dragForce * (vy / dragStruct.Velocity)
 	return helpers.DragResult[float64]{
 		DragForce: dragForce,
 		DragX:     dragX,
 		DragY:     dragY,
-		Velocity:  velocity}, nil
+	}, nil
 }
