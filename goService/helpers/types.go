@@ -9,12 +9,12 @@ type DragForceStruct[T float64] struct {
 	VelocityX T
 	VelocityY T
 	Height    T
+	Velocity  T
 }
 
 type TwoDContainer[T any] struct {
 	XAxis T
 	YAxis T
-	Angle T
 }
 
 type RocketDataFetcher struct {
@@ -26,7 +26,6 @@ type DragResult[T float64] struct {
 	DragForce T
 	DragX     T
 	DragY     T
-	Velocity  T
 }
 
 type RocketPositionParameter[T float64] struct {
@@ -50,6 +49,8 @@ type RocketPositionResult struct {
 	PositionX     float64
 	PositionY     float64
 	Angle         float64
+	Velocity      float64
+	Acceleration  float64
 }
 
 type StimulationResult struct {
