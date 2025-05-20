@@ -153,5 +153,5 @@ dist
 go.work
 
 #specific files
-/stimulus.json
+/goService/stimulus.json
 
