@@ -1,10 +1,10 @@
 package main
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	// "fmt"
+	// "os"
 	"sync"
-	"os"
 
 	"io"
 
@@ -21,11 +21,14 @@ import (
 
 func handleEndpoint1(c *gin.Context) {
 
+	var lock sync.Mutex
 	chanStream := make(chan helpers.StimulationResult, 1000)
-	go func() {
-		defer close(chanStream)
+	go func(m *sync.Mutex) {
+		m.Lock()
 		satellitecalculations.StimulationCalculation(chanStream)
-	}()
+		close(chanStream)
+		m.Unlock()
+	}(&lock)
 
 	c.Stream(func(w io.Writer) bool {
 		if msg, ok := <-chanStream; ok {
@@ -40,37 +43,37 @@ func handleEndpoint1(c *gin.Context) {
 }
 
 func main() {
-	var m sync.Mutex
-	// router := gin.Default()
+	// var m sync.Mutex
+	router := gin.Default()
 
-	// router.GET("/orbitalStream", handleEndpoint1)
+	router.GET("/orbitalStream", handleEndpoint1)
 
-	// router.Run(":8080")
+	router.Run(":8080")
 
-	chanStream := make(chan helpers.StimulationResult, 1000)
-	go func(m *sync.Mutex) {
-		m.Lock()
-		satellitecalculations.StimulationCalculation(chanStream)
-		close(chanStream)
-		m.Unlock()
-	}(&m)
-	file,err := os.Create("stimulus.json");
-	if err != nil {
-		 panic(err)
-	}
-	encoder := json.NewEncoder(file)
+	// chanStream := make(chan helpers.StimulationResult, 1000)
+	// go func(m *sync.Mutex) {
+	// 	m.Lock()
+	// 	satellitecalculations.StimulationCalculation(chanStream)
+	// 	close(chanStream)
+	// 	m.Unlock()
+	// }(&m)
+	// file, err := os.Create("stimulus.json")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// encoder := json.NewEncoder(file)
 
-	for data := range chanStream {
-		// fmt.Printf("%+v\n", data)
-		stimulator := helpers.StimulationResult {
-			Data: data.Data,
-			Count: data.Count,
-			Flag: data.Flag,
-		}
-		err = encoder.Encode(stimulator)
-		if err != nil {
-			panic(err)
-		}
-	}
-	file.Close()
+	// for data := range chanStream {
+	// 	// fmt.Printf("%+v\n", data)
+	// 	stimulator := helpers.StimulationResult{
+	// 		Data:  data.Data,
+	// 		Count: data.Count,
+	// 		Flag:  data.Flag,
+	// 	}
+	// 	err = encoder.Encode(stimulator)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }
+	// file.Close()
 }

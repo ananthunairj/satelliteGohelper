@@ -12,4 +12,7 @@ contextBridge.exposeInMainWorld("api", {
 contextBridge.exposeInMainWorld('electronAPI', {
    runGoScript: (args) => ipcRenderer.invoke('run-go-script', args),
   });
-  
+
+ contextBridge.exposeInMainWorld('env', {
+  API_ENDPOINTS : process.env.API_ENDPOINTS,
+ }) 

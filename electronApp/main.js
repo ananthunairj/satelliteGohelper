@@ -22,7 +22,7 @@ const createWindow = () => {
     },
   });
   win.maximize();
-  win.show();
+  win.show(); 
   win.loadFile("index.html");
 };
 

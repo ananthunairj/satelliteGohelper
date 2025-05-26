@@ -1,13 +1,15 @@
 import { startClock } from "./src/js/clock.js";
 import { environmentHandler } from "./src/js/environment.js";
+
+import { connectGoserverJS } from "./src/js/rocketdatamain.js";
 import { weatherApiDataHandler } from "./src/js/weather.js";
 
 async function initializeComponents() {
-  await loadComponent("clock", "src/components/clock.html");
-  await loadComponent("timer", "src/components/timer.html");
-  await loadComponent("rocketData", "src/components/rocketData.html");
-  await loadComponent("environment", "src/components/environment.html");
-  await loadComponent("weather", "src/components/weather.html");
+  await loadComponent("clock", "./src/components/clock.html");
+  await loadComponent("timer", "./src/components/timer.html");
+  await loadComponent("rocketData", "./src/components/rocketData.html");
+  await loadComponent("environment", "./src/components/environment.html");
+  await loadComponent("weather", "./src/components/weather.html");
 }
 
 async function apiLoader() {
@@ -48,7 +50,11 @@ async function loadComponent(elementId, filePath) {
         var parsedData = JSON.parse(storedData);
         const environmentElement = document.getElementById("environment");
         environmentHandler(environmentElement, parsedData);
-        
+
+      }
+
+      if(elementId === "rocketData") {
+        connectGoserverJS();
       }
     })
     .catch((error) => console.error("Error loading component:", error));
