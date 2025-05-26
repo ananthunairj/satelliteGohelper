@@ -1,5 +1,5 @@
 import windThreshold from "../utils/thresholds.js";
-import { DoublyLinkedLIst } from "./linkedfordouble.js";
+
 
 export async function environmentHandler(environmentElement, data) {
   windSpeedHandler(environmentElement, data);
@@ -81,8 +81,8 @@ async function windDirectionFinder(environmentElement, data) {
   } else {
     console.log("direction wind missing");
   }
-  const endpoint = "orbitalStream";
-  callRunGoScript(endpoint);
+
+
 }
 
 function windDirectionSafetyChecker(allowedDirections, directionWind) {
@@ -96,21 +96,4 @@ function windDirectionSafetyChecker(allowedDirections, directionWind) {
   return indicator;
 }
 
-async function callRunGoScript(args) {
-  try {
-    const endpoint = `http://localhost:8080/${args}`;
-    const eventSource = new EventSource(endpoint);
 
-    eventSource.onmessage = function (event) {
-       const data = JSON.parse(event.data)
-       if(data.Flag === false) {
-        console.log("closing connection")
-        eventSource.close()
-       } else {
-        console.log(data)
-       }
-    };
-  } catch (error) {
-    console.error(`Error: ${error}`);
-  }
-}

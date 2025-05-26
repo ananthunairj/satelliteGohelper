@@ -1,38 +1,38 @@
 class Node {
   constructor(data) {
     this.data = data;
-    this.prev = null;
     this.next = null;
+    this.prev = null;
   }
 }
 
-export class DoublyLinkedLIst {
+export class DoublyLinkedListJS {
   constructor() {
     this.head = null;
     this.tail = null;
     this.length = 0;
   }
   insertAtBeginning(data) {
-    const newNode = new Node(data);
+    const newnode = new Node(data);
     if (!this.head) {
-      this.head = newNode;
-      this.tail = newNode;
+      this.head = newnode;
+      this.tail = newnode;
     } else {
-      newNode.next = this.head;
-      this.head.prev = newNode;
-      this.head = newNode;
+      newnode.next = this.head;
+      this.head.prev = newnode;
+      this.head = newnode;
     }
     this.length++;
   }
   insertAtEnd(data) {
-    const newNode = new Node(data);
+    const newnode = new Node(data);
     if (!this.head) {
-      this.head = newNode;
-      this.tail = newNode;
+      this.head = newnode;
+      this.tail = newnode;
     } else {
-      newNode.prev = this.tail;
-      this.tail.next = newNode;
-      this.tail = newNode;
+      newnode.prev = this.tail;
+      this.tail.next = newnode;
+      this.tail = newnode;
     }
     this.length++;
   }
@@ -46,15 +46,15 @@ export class DoublyLinkedLIst {
     if (position === 0) {
       this.insertAtBeginning(data);
     }
-    const newNode = new Node(data);
+    const newnode = new Node(data);
     let current = this.head;
     for (let i = 0; i < position - 1; i++) {
       current = current.next;
     }
-    newNode.next = current.next;
-    newNode.prev = current;
-    current.next.prev = newNode;
-    current.next = newNode;
+    newnode.next = current.next;
+    newnode.prev = current;
+    current.next.prev = newnode;
+    current.next = newnode;
     this.length++;
     return true;
   }
@@ -95,12 +95,12 @@ export class DoublyLinkedLIst {
   search(data) {
     let current = this.head;
     let index = 0;
-    while(current) {
-        if(current.data === data) {
-            return index;
-        }
-        current = current.next;
-        index++;
+    while (current) {
+      if (current.data === data) {
+        return index;
+      }
+      current = current.next;
+      index++;
     }
     return -1;
   }
