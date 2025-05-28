@@ -9,7 +9,7 @@ export async function connectGoserverJS() {
     let apiEndpoints = JSON.parse(rawEndpoints);
     const endpoint = apiEndpoints.goservice;
     const dataInlinklist = new DoublyLinkedListJS();
-    dataInlinklist = getGODataJs(endpoint);
+    dataInlinklist = await getGODataJs(endpoint);
     // const string45 = JSON.stringify(dataInlinklist)
     // console.log(string45)
 
@@ -27,7 +27,7 @@ async function getGODataJs(args) {
       const data = JSON.parse(event.data);
       if (data.Flag === true) {
         console.log(data);
-        resultcontainer.insertAtBeginning(data.Data);
+        resultcontainer.insertAtEnd(data.Data);
         
       } else if (data.Flag === false) {
         console.log("closing connection");
@@ -51,10 +51,24 @@ async function arrayConvertforPlot(linkedlistobj) {
     while(convertinglinklist.head !== null)
       var data = convertinglinklist.deleteAndPopEndNode();
       if (data === null) return
-
+      
    }catch {
 
    }
+}
+
+async function linkedListToArray(linkedlist, key) {
+  const result  = []
+  let current = linkedlist.head;
+  while (current) {
+    if(current.data && key in current.data) {
+      result.push(current.data[key])
+    } else {
+      result.push(null);
+    }
+    current = current.next;
+  }
+  return result;
 }
 
 
