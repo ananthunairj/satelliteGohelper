@@ -44,13 +44,7 @@ async function arrayConvertforPlot(linkedlistobj) {
    try {
     const convertinglinklist = new DoublyLinkedListJS();
     convertinglinklist = linkedlistobj;
-     let size = convertinglinklist.sizereturner()
-     let timeArray = new Array(size);
-     let velocityArray = new Array(size);
-     let angleArray = new Array(size);
-    while(convertinglinklist.head !== null)
-      var data = convertinglinklist.deleteAndPopEndNode();
-      if (data === null) return
+    while(convertinglinklist.head === null)
 
    }catch {
 

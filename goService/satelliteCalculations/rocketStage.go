@@ -121,6 +121,7 @@ func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 				fmt.Printf("Error in RocketPositionCalculator")
 			}
 			rocketParamresult.Angle = angle
+			rocketParamresult.Time = float64(time)
 
 			rocketResult := &rocketParamresult
 			wg.Add(1)

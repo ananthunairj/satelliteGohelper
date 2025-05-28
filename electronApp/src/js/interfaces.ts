@@ -8,15 +8,16 @@ export interface RocketPositiondata {
   Angle: number;
   Velocity: number;
   Acceleration: number;
+  Time: number
 }
 
 export interface StimulationResult {
-    Data : RocketPositiondata
-    Count : number
-    Flag : boolean
+  Data: RocketPositiondata
+  Count: number
+  Flag: boolean
 }
 
 export interface Searchresult {
-  index : number | null
-  flag : boolean
+  index: number | null
+  flag: boolean
 }

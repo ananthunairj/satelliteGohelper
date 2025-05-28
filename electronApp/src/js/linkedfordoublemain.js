@@ -84,9 +84,22 @@ export class DoublyLinkedListJS {
     return false;
   }
 
-  deleteEndNode(){
-    if(!this.head) return false;
-    
+  deleteAndPopEndNode() {
+    if (!this.head || !this.tail) return false;
+    if (this.head === this.tail) {
+      this.head = null
+      this.tail = null
+      return null;
+    }
+    let tailData = this.tail.data;
+    let newTail = this.tail.prev
+    newTail.next = null
+    this.tail = newTail
+    this.length--;
+    return tailData;
+  }
+  sizereturner() {
+    return this.length;
   }
 
   traverseBackward() {

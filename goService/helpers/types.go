@@ -28,7 +28,7 @@ type DragResult[T float64] struct {
 	DragY     T
 }
 
-type RocketPositionParameter[T float64] struct { 
+type RocketPositionParameter[T float64] struct {
 	ThrustX   T
 	ThrustY   T
 	VelocityX T
@@ -51,6 +51,7 @@ type RocketPositionResult struct {
 	Angle         float64 `json:"Angle"`
 	Velocity      float64 `json:"Velocity"`
 	Acceleration  float64 `json:"Acceleration"`
+	Time          float64 `json:"Time"`
 }
 
 type StimulationResult struct {
