@@ -1,5 +1,23 @@
 import { DoublyLinkedListJS } from "./linkedfordoublemain.js";
 
+
+
+export async function connectGoserverJS() {
+  let rawEndpoints = window.env.API_ENDPOINTS;
+  try {
+    if (!rawEndpoints) return console.error("Endpoint in env corrupted..");
+    let apiEndpoints = JSON.parse(rawEndpoints);
+    const endpoint = apiEndpoints.goservice;
+    const dataInlinklist = new DoublyLinkedListJS();
+    dataInlinklist = getGODataJs(endpoint);
+    // const string45 = JSON.stringify(dataInlinklist)
+    // console.log(string45)
+
+  } catch (e) {
+    console.error("Failed to parse API_ENDPOINTS:", e);
+  }
+}
+
 async function getGODataJs(args) {
   try {
     const endpoint = `http://localhost:8080/${args}`;
@@ -22,18 +40,16 @@ async function getGODataJs(args) {
   }
 }
 
-export async function connectGoserverJS() {
-  let rawEndpoints = window.env.API_ENDPOINTS;
-  try {
-    if (!rawEndpoints) return console.error("Endpoint in env corrupted..");
-    let apiEndpoints = JSON.parse(rawEndpoints);
-    const endpoint = apiEndpoints.goservice;
-    const dataInlinklist = new DoublyLinkedListJS();
-    dataInlinklist = getGODataJs(endpoint);
-    // const string45 = JSON.stringify(dataInlinklist)
-    // console.log(string45)
+async function arrayConvertforPlot(linkedlistobj) {
+   try {
+    const convertinglinklist = new DoublyLinkedListJS();
+    convertinglinklist = linkedlistobj;
+    while(convertinglinklist.head === null)
 
-  } catch (e) {
-    console.error("Failed to parse API_ENDPOINTS:", e);
-  }
+   }catch {
+
+   }
 }
+
+
+

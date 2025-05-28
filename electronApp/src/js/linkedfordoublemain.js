@@ -84,12 +84,19 @@ export class DoublyLinkedListJS {
     return false;
   }
 
+  deleteEndNode(){
+    if(!this.head) return false;
+    
+  }
+
   traverseBackward() {
     let current = this.tail;
+    let value;
     while (current) {
-      console.log(current.data);
+      value = current.data;
       current = current.prev;
     }
+    return value;
   }
 
   search(data) {
