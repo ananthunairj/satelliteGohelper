@@ -10,10 +10,11 @@ async function getGODataJs(args) {
       if (data.Flag === true) {
         console.log(data);
         resultcontainer.insertAtBeginning(data.Data);
-        console.log("Current data is ", resultcontainer.traverseBackward());
+        
       } else if (data.Flag === false) {
         console.log("closing connection");
         eventSource.close();
+        return resultcontainer;
       }
     });
   } catch (error) {
@@ -27,7 +28,11 @@ export async function connectGoserverJS() {
     if (!rawEndpoints) return console.error("Endpoint in env corrupted..");
     let apiEndpoints = JSON.parse(rawEndpoints);
     const endpoint = apiEndpoints.goservice;
-    getGODataJs(endpoint);
+    const dataInlinklist = new DoublyLinkedListJS();
+    dataInlinklist = getGODataJs(endpoint);
+    // const string45 = JSON.stringify(dataInlinklist)
+    // console.log(string45)
+
   } catch (e) {
     console.error("Failed to parse API_ENDPOINTS:", e);
   }
