@@ -1,5 +1,8 @@
 export function startClock(container) {
   function updateClock() {
+    var clockelement = new HTMLElement();
+    clockelement = container;
+
     const today = new Date();
 
     const hours = today.getHours();
@@ -15,9 +18,13 @@ export function startClock(container) {
     const ampm = hour < 12 ? "AM" : "PM";
 
     const time = hourTime + ":" + minute + ":" + second + " " + ampm;
-    const dateTimeElement = container.querySelector("#date-time");
+    const dateTimeElement = clockelement.querySelector("#date-time");
+    
     if (dateTimeElement) {
-      dateTimeElement.innerHTML = time;
+      // dateTimeElement.innerHTML = time;
+      while(dateTimeElement.firstChild) 
+        dateTimeElement.removeChild(dateTimeElement.firstChild);
+      dateTimeElement.appendChild(document.createTextNode(time));
     } else {
       console.error("time element not found.");
     }

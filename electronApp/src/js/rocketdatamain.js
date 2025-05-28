@@ -46,7 +46,7 @@ async function arrayConvertforPlot(linkedlistobj) {
     let timeArray = await linkedListToArray(linkedlistobj,LinkedListVariables.TIME);
     let velocityArray = await linkedListToArray(linkedlistobj,LinkedListVariables.VELOCITY);
     let angleArray = await linkedListToArray(linkedlistobj, LinkedListVariables.ANGLE);
-
+   
 
   } catch (e){
         console.error(`Error occured ${e}`);

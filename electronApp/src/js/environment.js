@@ -7,15 +7,20 @@ export async function environmentHandler(environmentElement, data) {
 }
 
 async function windSpeedHandler(environmentElement, data) {
+  var environelement = new HTMLElement();
+  environelement = environmentElement;
   var windData = data.hourly;
   let windSpeedKmh =
     windData.wind_speed_10m[windData.wind_speed_10m.length - 1];
 
   var windSpeedms = Number(((windSpeedKmh * 5) / 18).toFixed(1));
   const environmentDisplay =
-    environmentElement.querySelector("#environmentdata");
+    environelement.querySelector("#environmentdata");
   if (environmentDisplay) {
-    environmentDisplay.innerHTML = "🍃 " + windSpeedms + " m/s";
+    while(environmentDisplay.firstChild)
+      environmentDisplay.removeChild(environmentDisplay.firstChild);
+    environmentDisplay.appendChild(document.createTextNode("🍃 " + windSpeedms + " m/s"))
+    // environmentDisplay.innerHTML = "🍃 " + windSpeedms + " m/s";
   } else {
     console.log("id weather missing");
   }
@@ -27,6 +32,9 @@ async function windSpeedHandler(environmentElement, data) {
 }
 
 async function windDirectionFinder(environmentElement, data) {
+    var windelement = new HTMLElement();
+  windelement = environmentElement;
+  
   var windData = data.hourly;
   var directionWind;
   let windDirection =
@@ -75,9 +83,12 @@ async function windDirectionFinder(environmentElement, data) {
   if (directionIndicator) indicatorElement = "✅";
   else indicatorElement = "⚠️";
 
-  const windDisplay = environmentElement.querySelector("#windDirection");
+  const windDisplay = windelement.querySelector("#windDirection");
   if (windDisplay) {
-    windDisplay.innerHTML = "🧭 " + directionWind + " " + indicatorElement;
+    // windDisplay.innerHTML = "🧭 " + directionWind + " " + indicatorElement;
+    while(windDisplay.firstChild) 
+      windDisplay.removeChild(windDisplay.firstChild)
+    windDisplay.appendChild(document.createTextNode("🧭 " + directionWind + " " + indicatorElement));
   } else {
     console.log("direction wind missing");
   }
