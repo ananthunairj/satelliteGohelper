@@ -35,10 +35,8 @@ async function loadComponent(elementId, filePath) {
         console.error(`container with ${elementId} not found`);
         return;
       }
-      // container.innerHTML = data;
-      while(container.firstChild) 
-        container.removeChild(container.firstChild)
-      container.appendChild(document.createTextNode(data));
+       container.innerHTML = data;
+     
       
       if (elementId === "clock") {
         startClock(container);

@@ -4,12 +4,13 @@ import { DoublyLinkedListJS } from "./linkedfordoublemain.js";
 
 
 export async function connectGoserverJS() {
-  let rawEndpoints = window.env.API_ENDPOINTS;
+  
   try {
+    let rawEndpoints = window.env.API_ENDPOINTS;
     if (!rawEndpoints) return console.error("Endpoint in env corrupted..");
     let apiEndpoints = JSON.parse(rawEndpoints);
-    const endpoint = apiEndpoints.goservice;
-    const dataInlinklist = new DoublyLinkedListJS();
+    let endpoint = apiEndpoints.goservice;
+    let dataInlinklist = new DoublyLinkedListJS();
     dataInlinklist = await getGODataJs(endpoint);
     // const string45 = JSON.stringify(dataInlinklist)
     // console.log(string45)
