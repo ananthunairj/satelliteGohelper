@@ -1,3 +1,4 @@
+import { LinkedListVariables } from "./constgroups.js";
 import { DoublyLinkedListJS } from "./linkedfordoublemain.js";
 
 
@@ -28,7 +29,7 @@ async function getGODataJs(args) {
       if (data.Flag === true) {
         console.log(data);
         resultcontainer.insertAtEnd(data.Data);
-        
+
       } else if (data.Flag === false) {
         console.log("closing connection");
         eventSource.close();
@@ -41,32 +42,28 @@ async function getGODataJs(args) {
 }
 
 async function arrayConvertforPlot(linkedlistobj) {
-   try {
-    const convertinglinklist = new DoublyLinkedListJS();
-    convertinglinklist = linkedlistobj;
-     let size = convertinglinklist.sizereturner()
-     let timeArray = new Array(size);
-     let velocityArray = new Array(size);
-     let angleArray = new Array(size);
-    while(convertinglinklist.head !== null)
-      var data = convertinglinklist.deleteAndPopEndNode();
-      if (data === null) return
-      
-   }catch {
+  try {
+    let timeArray = await linkedListToArray(linkedlistobj,LinkedListVariables.TIME);
+    let velocityArray = await linkedListToArray(linkedlistobj,LinkedListVariables.VELOCITY);
+    let angleArray = await linkedListToArray(linkedlistobj, LinkedListVariables.ANGLE);
 
-   }
+
+  } catch (e){
+        console.error(`Error occured ${e}`);
+  }
 }
 
-async function linkedListToArray(linkedlist, key) {
-  const result  = []
-  let current = linkedlist.head;
-  while (current) {
-    if(current.data && key in current.data) {
-      result.push(current.data[key])
+async function linkedListToArray(linkedlistobj, key) {
+  const convertinglinklist = new DoublyLinkedListJS();
+  convertinglinklist = linkedlistobj;
+  let size = convertinglinklist.sizereturner();
+  const result = [size]
+  for (let node = convertinglinklist.head; node !== null; node = node.next) {
+    if (node.data && key in node.data) {
+      result.push(node.data[key])
     } else {
       result.push(null);
     }
-    current = current.next;
   }
   return result;
 }
