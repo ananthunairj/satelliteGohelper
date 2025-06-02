@@ -2,11 +2,14 @@ package main
 
 import (
 	// "encoding/json"
-	// "fmt"
-	// "os"
-	"sync"
+	"encoding/json"
+	"fmt"
+	"net/http"
 
-	"io"
+	// "os"
+	// "sync"
+
+	// "io"
 
 	// "github.com/Anandhu3301/satelliteGohelper/constants"
 	"github.com/Anandhu3301/satelliteGohelper/helpers"
@@ -19,27 +22,58 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// func handleEndpoint1(c *gin.Context) {
+// 	chanStream := make(chan helpers.StimulationResult,2000)
+// 	go func() {
+// 		satellitecalculations.StimulationCalculation(chanStream)
+// 		close(chanStream)
+// 	}()
+// 	totalCount := 0
+// 	c.Stream(func(w io.Writer) bool {
+// 		msg, ok := <-chanStream
+// 		if !ok {
+// 			fmt.Printf("Stream ended. Total packets sent: %d\n", totalCount)
+// 			return false
+// 		}
+// 		c.SSEvent("message", msg)
+// 		if msg.Flag {
+// 			totalCount++
+// 		}
+// 		return true
+// 	})
+// }
+
 func handleEndpoint1(c *gin.Context) {
+	// Set headers explicitly for SSE
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+	c.Writer.Header().Set("Transfer-Encoding", "chunked")
 
-	var lock sync.Mutex
-	chanStream := make(chan helpers.StimulationResult, 1000)
-	go func(m *sync.Mutex) {
-		m.Lock()
-		satellitecalculations.StimulationCalculation(chanStream)
-		close(chanStream)
-		m.Unlock()
-	}(&lock)
+	chanStream := make(chan helpers.StimulationResult, 2000)
+	go satellitecalculations.StimulationCalculation(chanStream)
 
-	c.Stream(func(w io.Writer) bool {
-		if msg, ok := <-chanStream; ok {
-			c.SSEvent("message", msg)
-			if !msg.Flag {
-				return msg.Flag
-			}
-			return true
+	// Stream data
+	w := c.Writer
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming not supported", http.StatusInternalServerError)
+		return
+	}
+
+	for msg := range chanStream {
+		jsonData, err := json.Marshal(msg)
+		if err != nil {
+			fmt.Println("Error marshaling JSON:", err)
+			break
 		}
-		return false
-	})
+
+		// SSE format: data: {json}\n\n
+		fmt.Fprintf(w, "data: %s\n\n", jsonData)
+		flusher.Flush()
+	}
+
+	fmt.Println("Stream ended.")
 }
 
 func main() {

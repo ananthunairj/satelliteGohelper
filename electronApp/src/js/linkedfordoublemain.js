@@ -98,7 +98,7 @@ export class DoublyLinkedListJS {
     this.length--;
     return tailData;
   }
-  sizereturner() {
+  getsize() {
     return this.length;
   }
 
@@ -123,5 +123,10 @@ export class DoublyLinkedListJS {
       index++;
     }
     return -1;
+  }
+
+  clear() {
+    this.head = null;
+    this.tail = null;
   }
 }

@@ -7,15 +7,14 @@ export async function environmentHandler(environmentElement, data) {
 }
 
 async function windSpeedHandler(environmentElement, data) {
-  var environelement = new HTMLElement();
-  environelement = environmentElement;
+
   var windData = data.hourly;
   let windSpeedKmh =
     windData.wind_speed_10m[windData.wind_speed_10m.length - 1];
 
   var windSpeedms = Number(((windSpeedKmh * 5) / 18).toFixed(1));
   const environmentDisplay =
-    environelement.querySelector("#environmentdata");
+    environmentElement.querySelector("#environmentdata");
   if (environmentDisplay) {
     while(environmentDisplay.firstChild)
       environmentDisplay.removeChild(environmentDisplay.firstChild);
@@ -32,8 +31,7 @@ async function windSpeedHandler(environmentElement, data) {
 }
 
 async function windDirectionFinder(environmentElement, data) {
-    var windelement = new HTMLElement();
-  windelement = environmentElement;
+
   
   var windData = data.hourly;
   var directionWind;
@@ -83,7 +81,7 @@ async function windDirectionFinder(environmentElement, data) {
   if (directionIndicator) indicatorElement = "✅";
   else indicatorElement = "⚠️";
 
-  const windDisplay = windelement.querySelector("#windDirection");
+  const windDisplay = environmentElement.querySelector("#windDirection");
   if (windDisplay) {
     // windDisplay.innerHTML = "🧭 " + directionWind + " " + indicatorElement;
     while(windDisplay.firstChild) 
