@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; connect-src 'self' http://localhost:8080;"
-    />
-    <meta
-      http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <title>Visualizer</title>
-    <link rel="stylesheet" href="src/styles/styles.css" />
 
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    connect-src 'self' http://localhost:8080;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data:;
+" />
+  <title>Visualizer</title>
+  <link rel="stylesheet" href="src/styles/styles.css" />
 
-    <div class="dashboard">
-      <div class="weather" id="weather"></div>
-      <div class="top-right">
+</head>
+
+<body>
+
+  <div class="dashboard">
+     <div class="left-panel">
+       <div class="clock" id="clock"></div>
         <div class="timer" id="timer"></div>
-        <div class="clock" id="clock"></div>
-      </div>
-
+    <div class="weather" id="weather"></div>
       <div class="environment" id="environment"></div>
-      <div class="rocket" id="rocketData"></div>
     </div>
-    <script type="module" src="./renderer.js"></script>
-  </body>
+
+    
+    <div class="rocket" id="rocketData"></div>
+  </div>
+  <script type="module" src="./renderer.js"></script>
+</body>
+
 </html>

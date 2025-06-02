@@ -2,6 +2,7 @@
     border-color: rgb(130, 169, 214);
     justify-content: center;
     display: flex;
+    padding: 1rem;
     align-items: center;
     border-style: solid;
     border-width: 2px;

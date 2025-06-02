@@ -61,10 +61,8 @@ func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 		velocity           float64     = 0
 		velocityPointer    *float64    = &velocity
 	)
-
-	var wg sync.WaitGroup
-	var m sync.Mutex
-
+   var Channelcount int = 0
+	var m sync.RWMutex
 	for i := 0; i < len(rocketData); i++ {
 		x := *positionXPointer
 		y := *positionYPointer
@@ -73,7 +71,6 @@ func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 		v := *velocityPointer
 
 		var burnTime uint = 0
-		var Channelcount int = 0
 		var timePointer *uint = &burnTime
 		fuelBurned, err := FuelBurnRate(rocketData[i][1], rocketData[i][0])
 		if err != nil {
@@ -104,7 +101,7 @@ func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 			if err != nil {
 				fmt.Println("Error occured in RemainingMassCalculator")
 			}
-			Channelcount += 1
+			
 			rocketPositionValues := helpers.RocketPositionParameter[float64]{
 				ThrustX:   thrustResult.XAxis,
 				ThrustY:   thrustResult.YAxis,
@@ -122,27 +119,21 @@ func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 			}
 			rocketParamresult.Angle = angle
 			rocketParamresult.Time = float64(time)
-
-			rocketResult := &rocketParamresult
-			wg.Add(1)
-			go func(r *helpers.RocketPositionResult, m *sync.Mutex, wg *sync.WaitGroup) {
 				m.Lock()
-				*positionXPointer = r.PositionX
-				*positionYPointer = r.PositionY
-				*velocityXPointer = r.VelocityX
-				*velocityYPointer = r.VelocityY
-				*velocityPointer = r.Velocity
-				wg.Done()
+				*positionXPointer = rocketParamresult.PositionX
+				*positionYPointer = rocketParamresult.PositionY
+				*velocityXPointer = rocketParamresult.VelocityX
+				*velocityYPointer = rocketParamresult.VelocityY
+				*velocityPointer = rocketParamresult.Velocity
 				m.Unlock()
-			}(rocketResult, &m, &wg)
-
 			*timePointer += 1
 			*timeCounterPointer += 1
-			wg.Wait()
+			Channelcount++;
 			rocketChannel <- helpers.StimulationResult{Data: rocketParamresult, Count: Channelcount, Flag: true}
 
 		}
 	}
 	rocketChannel <- helpers.StimulationResult{Data: helpers.RocketPositionResult{}, Flag: false}
+	close(rocketChannel)
 
 }
