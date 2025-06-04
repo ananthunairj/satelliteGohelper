@@ -71,37 +71,50 @@ export async function connectGoserverJS(container) {
 async function getGODataJs(args) {
   return new Promise((resolve, reject) => {
     try {
-      let receivedCounts = new Set();
+      const receivedCounts = new Set();
       const endpoint = `ws://localhost:8080/${args}`;
       const socket = new WebSocket(endpoint);
       const resultcontainer = new DoublyLinkedListJS();
-      let count = 0;
+      let lastCount = 0;
+      let totalExpected = null;
+
       socket.binaryType = "arraybuffer";
 
-      socket.onopen = () => {
-        console.log("WebSocket connected");
-      };
-
       socket.onmessage = (event) => {
-        const text = new TextDecoder().decode(event.data);
-        const data = JSON.parse(text);
-        console.log("Received:", data);
-        count++;
+        const data = JSON.parse(new TextDecoder().decode(event.data));
 
-        if (data.Flag === true) {
+        if (data.Flag) {
           resultcontainer.insertAtEnd(data.Data);
           receivedCounts.add(data.Count);
-        } else if (data.Flag === false) {
-          for (let i = 1; i <= 973; i++) {
-            if (!receivedCounts.has(i)) {
-              console.log("Missing packet:", i);
+          if (data.Count !== lastCount + 1 && lastCount !== 0) {
+            for (let i = lastCount + 1; i < data.Count; i++) {
+              console.warn("Missing packet:", i);
             }
           }
+          lastCount = data.Count;
+        } else {
+          // Delay evaluation to let remaining packets queue in browser
+          totalExpected = data.TotalPackets;
           setTimeout(() => {
-            socket.send("ACK");
+            const missing = [];
+
+            for (let i = 1; i <= totalExpected; i++) {
+              if (!receivedCounts.has(i)) {
+                missing.push(i);
+              }
+            }
+
+            if (missing.length === 0) {
+              console.log("✅ All packets received. Sending ACK.");
+              socket.send("ACK");
+              resolve(resultcontainer);
+            } else {
+              console.error("❌ Missing packets:", missing);
+              reject(new Error("Missing packets: " + missing.join(", ")));
+            }
+
             socket.close();
-            resolve(resultcontainer);
-          }, 100);
+          }, 50); // small delay to allow any queued messages to process
         }
       };
 
@@ -110,15 +123,19 @@ async function getGODataJs(args) {
         reject(err);
       };
 
+      socket.onopen = () => {
+        console.log("WebSocket connected");
+      };
+
       socket.onclose = () => {
         console.log("WebSocket closed");
       };
-      socket.onerror = (err) => console.error("WebSocket error:", err);
     } catch (err) {
       reject(err);
     }
   });
 }
+
 
 async function plotMaker(linkedlistobj, container) {
   try {

@@ -33,11 +33,10 @@ func FuelBurnRate(isp float64, thrust float64) (float64, error) {
 	return helpers.RoundFloatNumbers(thrust/(isp*constants.G0), 2), nil
 }
 
-func RemainingMassCalculator(massSlice []float64, index int, fuelburnrate float64) error {
-	var activeMass float64 = massSlice[index]
+func RemainingMassCalculator(massvalue float64, fuelburnrate float64) (float64,error) {
+	var activeMass float64 = float64(massvalue)
 	var remainingmass float64 = helpers.RoundFloatNumbers(activeMass-fuelburnrate, 2)
-	massSlice[index] = remainingmass
-	return nil
+	return remainingmass,nil
 }
 
 func StimulationCalculation(ws *websocket.Conn) {
@@ -62,7 +61,7 @@ func StimulationCalculation(ws *websocket.Conn) {
 		v := velocity
 		burnTime := uint(0)
 		fuelBurned, _ := FuelBurnRate(rocketData[i][1], rocketData[i][0])
-		massSlice := mass[:]
+		// massSlice := mass[:]
 		dragForce := helpers.DragForceStruct[float64]{Diameter: int(rocketData[i][5])}
 
 		for rocketData[i][4] > float64(burnTime) && mass[i] > rocketData[i][2] {
@@ -72,7 +71,7 @@ func StimulationCalculation(ws *websocket.Conn) {
 			dragResult, _ := internal.DragForceCalculator(dragForce)
 			angle := helpers.InterPolatePitch(float64(timeCounter))
 			thrustResult, _ := ThrustCalculator(rocketData[i][0], angle)
-			_ = RemainingMassCalculator(massSlice, i, fuelBurned)
+			mass[i],_ = RemainingMassCalculator(mass[i], fuelBurned)
 
 			params := helpers.RocketPositionParameter[float64]{
 				ThrustX:   thrustResult.XAxis,
@@ -83,7 +82,7 @@ func StimulationCalculation(ws *websocket.Conn) {
 				PositionY: y,
 				DragX:     dragResult.DragX,
 				DragY:     dragResult.DragY,
-				Mass:      massSlice[i],
+				Mass:      mass[i],
 			}
 
 			result, _ := internal.RocketPositionCalculator(params)
