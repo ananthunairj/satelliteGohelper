@@ -41,28 +41,79 @@ export async function connectGoserverJS(container) {
 //   }
 // }
 
+// async function getGODataJs(args) {
+//   return new Promise((resolve, reject) => {
+//     try {
+//       const endpoint = `http://localhost:8080/${args}`;
+//       const socket = new WebSocket(endpoint, { withCredentials: true });
+//       const resultcontainer = new DoublyLinkedListJS();
+
+//       eventSource.addEventListener("message", (event) => {
+//         const data = JSON.parse(event.data);
+//         if (data.Flag === true) {
+//           resultcontainer.insertAtEnd(data.Data);
+//         } else if (data.Flag === false) {
+//           eventSource.close();
+//            console.log("Received data length:", resultcontainer.length);
+//           resolve(resultcontainer);
+//         }
+//       });
+
+//       eventSource.addEventListener("error", (err) => {
+//         eventSource.close();
+//         reject(err);
+//       });
+//     } catch (err) {
+//       reject(err);
+//     }
+//   });
+// }
 async function getGODataJs(args) {
   return new Promise((resolve, reject) => {
     try {
-      const endpoint = `http://localhost:8080/${args}`;
-      const eventSource = new EventSource(endpoint);
+      let receivedCounts = new Set();
+      const endpoint = `ws://localhost:8080/${args}`;
+      const socket = new WebSocket(endpoint);
       const resultcontainer = new DoublyLinkedListJS();
+      let count = 0;
+      socket.binaryType = "arraybuffer";
 
-      eventSource.addEventListener("message", (event) => {
-        const data = JSON.parse(event.data);
+      socket.onopen = () => {
+        console.log("WebSocket connected");
+      };
+
+      socket.onmessage = (event) => {
+        const text = new TextDecoder().decode(event.data);
+        const data = JSON.parse(text);
+        console.log("Received:", data);
+        count++;
+
         if (data.Flag === true) {
           resultcontainer.insertAtEnd(data.Data);
+          receivedCounts.add(data.Count);
         } else if (data.Flag === false) {
-          eventSource.close();
-           console.log("Received data length:", resultcontainer.length);
-          resolve(resultcontainer);
+          for (let i = 1; i <= 973; i++) {
+            if (!receivedCounts.has(i)) {
+              console.log("Missing packet:", i);
+            }
+          }
+          setTimeout(() => {
+            socket.send("ACK");
+            socket.close();
+            resolve(resultcontainer);
+          }, 100);
         }
-      });
+      };
 
-      eventSource.addEventListener("error", (err) => {
-        eventSource.close();
+      socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
         reject(err);
-      });
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket closed");
+      };
+      socket.onerror = (err) => console.error("WebSocket error:", err);
     } catch (err) {
       reject(err);
     }
@@ -251,7 +302,12 @@ async function plotMaker(linkedlistobj, container) {
     };
 
     await Plotly.newPlot(velotimeDiv, [tracetimevelo], layouttimevelo, config);
-    await Plotly.newPlot(angletimeDiv,[tracetimeangle],layouttimeangle,config);
+    await Plotly.newPlot(
+      angletimeDiv,
+      [tracetimeangle],
+      layouttimeangle,
+      config
+    );
     // await clearArray(timeArray,velocityArray,angleArray);
   } catch (e) {
     console.error(`Error occured ${e}`);
