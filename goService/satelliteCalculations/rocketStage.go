@@ -1,13 +1,17 @@
 package satellitecalculations
 
 import (
-	"fmt"
+	"encoding/json"
+	"time"
+	// "fmt"
+	"log"
 	"math"
 	"sync"
 
 	"github.com/Anandhu3301/satelliteGohelper/constants"
 	"github.com/Anandhu3301/satelliteGohelper/helpers"
 	"github.com/Anandhu3301/satelliteGohelper/internal"
+	"github.com/gorilla/websocket"
 )
 
 // func velocityCalculator(velocityStruct helpers.DragForceStruct[float64]) float64 {
@@ -19,17 +23,14 @@ import (
 
 func ThrustCalculator(thrust float64, angle float64) (helpers.TwoDContainer[float64], error) {
 
-	var thrustX float64 = math.Cos(angle) * thrust
-	var thrustY float64 = math.Sin(angle) * thrust
 	return helpers.TwoDContainer[float64]{
-		XAxis: thrustX,
-		YAxis: thrustY,
+		XAxis: math.Cos(angle) * thrust,
+		YAxis: math.Sin(angle) * thrust,
 	}, nil
 }
 
 func FuelBurnRate(isp float64, thrust float64) (float64, error) {
-	var fuelburned float64 = thrust / (isp * constants.G0)
-	return helpers.RoundFloatNumbers(fuelburned, 2), nil
+	return helpers.RoundFloatNumbers(thrust/(isp*constants.G0), 2), nil
 }
 
 func RemainingMassCalculator(massSlice []float64, index int, fuelburnrate float64) error {
@@ -39,70 +40,41 @@ func RemainingMassCalculator(massSlice []float64, index int, fuelburnrate float6
 	return nil
 }
 
-func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
+func StimulationCalculation(ws *websocket.Conn) {
 
 	rocketData := constants.GetAllRocketData()
-	var (
-		firstStageMass     float64     = rocketData[0][2] + rocketData[0][3] + rocketData[1][2] + rocketData[1][3] + rocketData[2][2] + rocketData[2][3]
-		secondStageMass    float64     = rocketData[1][2] + rocketData[1][3] + rocketData[2][2] + rocketData[2][3]
-		thirdStageMass     float64     = rocketData[2][2] + rocketData[2][3]
-		mass               [3]float64  = [3]float64{firstStageMass, secondStageMass, thirdStageMass}
-		massptr            *[3]float64 = &mass
-		timeCounter        uint        = 1
-		timeCounterPointer *uint       = &timeCounter
-		positionX          float64     = 0
-		positionXPointer   *float64    = &positionX
-		positionY          float64     = 0
-		positionYPointer   *float64    = &positionY
-		velocityX          float64     = 0
-		velocityXPointer   *float64    = &velocityX
-		velocityY          float64     = 0
-		velocityYPointer   *float64    = &velocityY
-		velocity           float64     = 0
-		velocityPointer    *float64    = &velocity
-	)
-   var Channelcount int = 0
+	firstStageMass := rocketData[0][2] + rocketData[0][3] + rocketData[1][2] + rocketData[1][3] + rocketData[2][2] + rocketData[2][3]
+	secondStageMass := rocketData[1][2] + rocketData[1][3] + rocketData[2][2] + rocketData[2][3]
+	thirdStageMass := rocketData[2][2] + rocketData[2][3]
+	mass := [3]float64{firstStageMass, secondStageMass, thirdStageMass}
+
+	timeCounter := 1
+	positionX, positionY := 0.0, 0.0
+	velocityX, velocityY := 0.0, 0.0
+	velocity := 0.0
+	packetCount := 0
+
 	var m sync.RWMutex
+
 	for i := 0; i < len(rocketData); i++ {
-		x := *positionXPointer
-		y := *positionYPointer
-		vx := *velocityXPointer
-		vy := *velocityYPointer
-		v := *velocityPointer
-
-		var burnTime uint = 0
-		var timePointer *uint = &burnTime
-		fuelBurned, err := FuelBurnRate(rocketData[i][1], rocketData[i][0])
-		if err != nil {
-			fmt.Println("Error occured in FuelBurnRate")
-		}
+		x, y := positionX, positionY
+		vx, vy := velocityX, velocityY
+		v := velocity
+		burnTime := uint(0)
+		fuelBurned, _ := FuelBurnRate(rocketData[i][1], rocketData[i][0])
 		massSlice := mass[:]
-
 		dragForce := helpers.DragForceStruct[float64]{Diameter: int(rocketData[i][5])}
-		for (rocketData[i][4] > float64(*timePointer)) && ((*massptr)[i] > rocketData[i][2]) {
-			dragForce.VelocityX = vx
-			dragForce.VelocityY = vy
-			dragForce.Height = y
-			dragForce.Velocity = v
-			dragResult, err := internal.DragForceCalculator(dragForce)
-			if err != nil {
-				fmt.Println("Error occured in DragForceCalculator")
-			}
 
-			time := *timeCounterPointer
-			angle := helpers.InterPolatePitch(float64(time))
+		for rocketData[i][4] > float64(burnTime) && mass[i] > rocketData[i][2] {
+			dragForce.VelocityX, dragForce.VelocityY = vx, vy
+			dragForce.Height, dragForce.Velocity = y, v
 
-			thrustResult, err := ThrustCalculator(rocketData[i][0], angle)
-			if err != nil {
-				fmt.Println("Error occured in ThrustCalculator")
-			}
+			dragResult, _ := internal.DragForceCalculator(dragForce)
+			angle := helpers.InterPolatePitch(float64(timeCounter))
+			thrustResult, _ := ThrustCalculator(rocketData[i][0], angle)
+			_ = RemainingMassCalculator(massSlice, i, fuelBurned)
 
-			err = RemainingMassCalculator(massSlice, i, fuelBurned)
-			if err != nil {
-				fmt.Println("Error occured in RemainingMassCalculator")
-			}
-			
-			rocketPositionValues := helpers.RocketPositionParameter[float64]{
+			params := helpers.RocketPositionParameter[float64]{
 				ThrustX:   thrustResult.XAxis,
 				ThrustY:   thrustResult.YAxis,
 				VelocityX: vx,
@@ -113,27 +85,47 @@ func StimulationCalculation(rocketChannel chan<- helpers.StimulationResult) {
 				DragY:     dragResult.DragY,
 				Mass:      massSlice[i],
 			}
-			rocketParamresult, err := internal.RocketPositionCalculator(rocketPositionValues)
-			if err != nil {
-				fmt.Printf("Error in RocketPositionCalculator")
-			}
-			rocketParamresult.Angle = angle
-			rocketParamresult.Time = float64(time)
-				m.Lock()
-				*positionXPointer = rocketParamresult.PositionX
-				*positionYPointer = rocketParamresult.PositionY
-				*velocityXPointer = rocketParamresult.VelocityX
-				*velocityYPointer = rocketParamresult.VelocityY
-				*velocityPointer = rocketParamresult.Velocity
-				m.Unlock()
-			*timePointer += 1
-			*timeCounterPointer += 1
-			Channelcount++;
-			rocketChannel <- helpers.StimulationResult{Data: rocketParamresult, Count: Channelcount, Flag: true}
 
+			result, _ := internal.RocketPositionCalculator(params)
+			result.Angle = angle
+			result.Time = float64(timeCounter)
+
+			m.Lock()
+			positionX, positionY = result.PositionX, result.PositionY
+			velocityX, velocityY = result.VelocityX, result.VelocityY
+			velocity = result.Velocity
+			m.Unlock()
+
+			timeCounter++
+			burnTime++
+			packetCount++
+
+			if packetCount%50 == 0 {
+				time.Sleep(5 * time.Millisecond)
+			}
+
+			msg := helpers.StimulationResult{Data: result, Count: packetCount, Flag: true}
+			data, _ := json.Marshal(msg)
+			if err := ws.WriteMessage(websocket.BinaryMessage, data); err != nil {
+				log.Println("WebSocket write error:", err)
+				return
+			}
 		}
 	}
-	rocketChannel <- helpers.StimulationResult{Data: helpers.RocketPositionResult{}, Flag: false}
-	close(rocketChannel)
 
+	finalPacket := helpers.StimulationResult{Data: helpers.RocketPositionResult{}, Flag: false}
+	finalData, _ := json.Marshal(finalPacket)
+	if err := ws.WriteMessage(websocket.BinaryMessage, finalData); err != nil {
+		log.Println("Error sending termination packet:", err)
+		return
+	}
+
+	_, message, err := ws.ReadMessage()
+	if err != nil {
+		log.Println("Error waiting for client ACK:", err)
+	} else if string(message) == "ACK" {
+		log.Println("Client acknowledged receipt of all packets.")
+	}
+	ws.Close() // Clean close
+	log.Printf("Final termination packet sent. Total packets sent: %d\n", packetCount)
 }
