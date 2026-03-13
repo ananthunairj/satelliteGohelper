@@ -24,7 +24,6 @@ async function apiLoader() {
 
 async function initializeComponents() {
   await loadComponent("clock", "./src/components/clock.html");
-  await loadComponent("timer", "./src/components/timer.html");
   await loadComponent("environment", "./src/components/environment.html");
   await loadComponent("weather", "./src/components/weather.html");
    await loadComponent("rocketData", "./src/components/rocketData.html");

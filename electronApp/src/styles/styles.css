@@ -1,6 +1,8 @@
 html,
 body {
   overflow: hidden;
+ 
+
 }
 
 .dashboard {
@@ -14,6 +16,7 @@ body {
   height: 100vh;
   padding: 1rem;
   box-sizing: border-box;
+  z-index: 1000;
 }
 
 /* .weather {
@@ -31,6 +34,7 @@ body {
 .timer {
   padding: 1rem;
   width: 150px;
+  z-index: 1000;
 }
 
 /* .rocket {
@@ -44,6 +48,15 @@ body {
   padding: 1rem;
 } */
 
+.image {
+  position: fixed;
+  top: 50%;
+  left: 0%;
+  width: 30%;
+  height: 50%;
+  
+  object-fit: cover;
+}
 
 .left-panel {
   display: flex;
@@ -66,8 +79,7 @@ body {
   border: 2px solid #ccc;
   border-radius: 8px;
  background: #141E30;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+ background: linear-gradient(90deg,rgba(141, 183, 199, 1) 0%, rgba(189, 199, 191, 1) 37%, rgba(245, 242, 233, 1) 100%);
+z-index: 1000;
 
 }
