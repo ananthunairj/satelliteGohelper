@@ -69,14 +69,4 @@ satelliteGohelper/
 4. Click "Launch" to begin the simulation
 5. Watch the real-time trajectory visualization
 
-## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contact
-
-For questions and support, please open an issue on the GitHub repository.
