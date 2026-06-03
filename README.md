@@ -1,2 +1,82 @@
 # satelliteGohelper
-Rocket launching stimulation powered by electron js and golang
+
+Rocket launching simulation powered by Electron JS and Golang
+
+## Overview
+
+satelliteGohelper is a desktop application that provides realistic rocket launching simulations. Built with a modern tech stack combining the power of Golang for backend computation and Electron JS for cross-platform UI, this project delivers an intuitive and visually engaging experience for space enthusiasts and developers.
+
+## Features
+
+- **Real-time Simulation**: Accurate physics-based rocket launch simulations
+- **Cross-Platform**: Works seamlessly on Windows, macOS, and Linux
+- **Interactive UI**: User-friendly interface built with Electron JS
+- **High Performance**: Leverages Golang for fast computational backend
+- **Trajectory Visualization**: Real-time visualization of rocket trajectories
+- **Multiple Rocket Models**: Support for various satellite and rocket configurations
+
+## Tech Stack
+
+- **Frontend**: Electron JS - Create powerful desktop applications
+- **Backend**: Golang - High-performance computation engine
+- **Visualization**: WebGL-powered graphics rendering
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- Golang (v1.16 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/ananthunairj/satelliteGohelper.git
+cd satelliteGohelper
+
+# Install dependencies
+npm install
+
+# Build the Golang backend
+go build ./...
+```
+
+### Running the Application
+
+```bash
+# Start the development environment
+npm start
+```
+
+## Project Structure
+
+```
+satelliteGohelper/
+├── src/              # Frontend source code
+├── main/             # Electron main process
+├── backend/          # Golang backend services
+├── public/           # Static assets
+└── package.json      # Project dependencies
+```
+
+## Usage
+
+1. Launch the application
+2. Select a rocket/satellite model
+3. Configure launch parameters (angle, thrust, etc.)
+4. Click "Launch" to begin the simulation
+5. Watch the real-time trajectory visualization
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Contact
+
+For questions and support, please open an issue on the GitHub repository.
