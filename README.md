@@ -60,11 +60,14 @@ npm start
 
 ```
 satelliteGohelper/
-├── src/              # Frontend source code
-├── main/             # Electron main process
-├── backend/          # Golang backend services
-├── public/           # Static assets
-└── package.json      # Project dependencies
+├── electronApp/          # Electron application frontend code
+├── goService/            # Golang backend services and physics engine
+├── release/              # Build and release artifacts
+├── .vscode/              # VS Code workspace settings
+├── LICENSE               # License file
+├── README.md             # This file
+├── .gitignore            # Git ignore rules
+└── package.json          # Node.js dependencies
 ```
 
 ## Usage
