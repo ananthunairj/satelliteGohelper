@@ -6,6 +6,12 @@ Rocket launching simulation powered by Electron JS and Golang
 
 satelliteGohelper is a desktop application that provides realistic rocket launching simulations. Built with a modern tech stack combining the power of Golang for backend computation and Electron JS for cross-platform UI, this project delivers an intuitive and visually engaging experience for space enthusiasts and developers.
 
+Using real-world data from the ISRO GSLV Mk II launch vehicle, I developed a physics-based simulation that models the rocket's ascent from launch to escape trajectory. By applying aerospace and orbital mechanics equations, I calculated and visualized key flight parameters, including velocity, acceleration, altitude, thrust, and escape velocity, at every second of the mission.
+
+The simulation is centered around actual GSLV Mk II vehicle specifications and demonstrates how the rocket gains speed, overcomes atmospheric drag and gravity, and eventually achieves the conditions required for spaceflight. Atmospheric data used in the calculations was derived from conditions at the Satish Dhawan Space Centre, Sriharikota, providing realistic environmental inputs for the model.
+
+Through this project, I successfully validated and visualized the rocket's flight dynamics, showcasing the relationship between propulsion, atmospheric conditions, and orbital mechanics throughout its ascent.
+
 ## Features
 
 - **Real-time Simulation**: Accurate physics-based rocket launch simulations
